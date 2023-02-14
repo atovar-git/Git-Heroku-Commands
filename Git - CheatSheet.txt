@@ -1,0 +1,163 @@
+/* Creación de repositorio LOCAL ----------------------------------------------------------------------------*/
+
+git init			--Crea repositorio local en la carpeta donde estés parado.
+			--Puede que pida usuario y contraseña, poner el de GitHub.
+
+git config user.name "Alan"
+git config user.mail "alanvictortovar@hotmail.com" 	--El de github.
+
+git status		--indica el estado de los archivos para darle seguiemiento.
+
+git add .		--Suma al Staging Area todos los archivos del mismo directorio.
+				-- .	(mismo directorio)
+		        -- --all	(todos los archivos del repositorio sin impotar donde estes parado)
+
+git commit -m "este es mi primer commit"	--Agrego los archivos al Area de "Producción"
+
+/* Conexión entre repositorio LOCAL y REMOTO --------------------------------------------------------------------*/
+Al crear el repositorio GitHub te indica el comando a correr para vincularlo.
+
+git remote add origin url_de_mi_repositorio_de_github	--Conecto al repositorio remoto. Se agrega a la ista de repositorios REMOTOS vinculados.
+					                 --Se hace una vez por repositorio.
+					                 --add origin significa que el repositorio remoto se llama origin y tiene su URL.
+
+git remote -v					--Para verificar que quedaron conectados.
+						--Muestra una lista de los repositorios REMOTOS vinculados.
+
+git remote set-url origin url_de_mi_NUEVO_repositorio_de_github	--Si deseamos cambiar/migrar de repositorio REMOTO podemos ejecutar esta línea.
+
+git push -u origin master	--Para subir al repositorio remoto. El -u me permite que luego si quiero realziarlo de nuevo no pongo origin master.
+
+/* Que es origin o remote ---------------------------------------------------------------------------------------*/
+Puede sonar confuso la instrucción git push origin master. Qué hace?
+Básicamente origin es el repositorio remoto (Github). Lo llama de esa manera, abreviado, que tiene su URL.
+El local no lo vemos, no tiene nombre. ntonces
+git push (comando de git para pushear cambios) origin (push al repositorio remoto llamado orign) master (solo pusheara esta rama master LOCAL a master de remoto. Si la remota no existe la crará.
+Si alguien hace como un fork (copia del repositorio de Github) se creará otro alias, ya no será el ORIGEN, sino que es una copia.  Esto pasa en Heroku.
+ORIGIN entonces es nuestro repositorio de Github ORIGINAL, pero "heroku" es el repositorio de Heroku.
+De esta forma si hacemos git remote -v veremos los REPOSITORIOS remotos VINCULADOS serán:
+origin (alias del repositorio remoto) + URL de ESE repositorio           (repositorio nuesto original)
+heroku (alias del nuevo/copia repositorio remoto) + URL de nuevo/copia repositorio (repositorio copiado a Heroku)
+
+En conclusión: ORIGIN es el repositorio remoto (abreviación para identificarlo) y se llama origin porque es el repositorio ORIGINAL, de donde salieron otros al hacer forks, como el de Heroku.
+
+/* Clonar -------------------------------------------------------------------------------------------------------------*/
+Si ya tenes tu código en el repositorio remoto (llamado con el alias origin) y lo queres copiar a tu máquina locl usar el comando 
+git clone direccion_url_del_repo
+Creará una CARPETA YA con el nombre del repositorio.
+Esto hará que quede vinculado automáticamente al repositorio origin. Puede que queramos subir este código a NUESTRO repositorio para eso escribir:
+
+
+
+/* Creación de ramas ---------------------------------------------------------------------------------------------*/
+git checkout -b ***nombre_rama_nueva***		--Creo rama nueva. Esta tendrá sus commits.
+
+git checkout ***rama_existente*** 			--Me paso a la rama existente que desee Esta tendrá sus propios commtis.
+
+/* Merge ---------------------------------------------------------------------------------------------*/
+
+git merge dev --ME PARO EN LA RAMA ORIGINAL, y le indico a cual unirme.
+
+/* Nuevo ciclo de trabajo ------------------------------------------------------------------------*/
+Luego de un merge y todo está OK en DEV, vamos a crear nuevamente una rama para seguir trabajando:
+
+Local:
+Salgo de mi rama (mergeada) y paso a la rama dev:	git checkout dev
+Actualizo dev ya que no tendrá lo que pasó en GitHub: 	git pull
+Elimino mi rama donde estaba trabajando:		git branch  -d nombre_rama_vieja
+
+Creo ahora una nueva rama basándonos en dev que ya tiene todo ok: git checkout dev
+							git checkout  -b nombre_nueva_rama
+
+Ya estamos en el nueva rama: 			git add .
+			 			git commit -m "initial commit"
+Subo al repositorio la nueva rama (vacía por ahora):	git push
+Arroja error ya que no existe en GitHub, usar:		git push --set-upstream origin nombre_nueva_rama (copiar y pegar de la consola esta linea)
+
+Seguimos trabajando en la rama nueva.
+
+/* Descargando rama de un compañero ------------------------------------------------------------------------*/
+Puede pasar que queremos ver la rama de otro compañero. La rama la vemos en Github pero no la tenemos en local.
+- Asegurarnos de pushear todos nuestro cambios a nuestra rama en la que estábamos trabajando para no perder información.
+- Ya pusheados nuestros cambios hacemos git pull para descargar todos los cambios que tiene Github. Vemos que aparece un mensaje mostrando una nueva rama que es la de nuestro compañero de origin (Github).
+- Hacemos git checkout rama_de_mi_compañero y listo. Ya Git sabe que estamos trackeando esa rama y podemos ver su contenido.
+
+
+============================================================================
+Cosas de Heroku:
+
+Para vincular Git a Heroku:
+heroku git:remote -a example-app
+De esta forma ya podemos pasar el código de git a Heroku. Heroku SOLO DEPLOYEA lo que se pushee a SU MASTER/MAIN.
+git remote -v (Para ver si quedó vinculado)
+
+Para deployar el código:
+git push heroku main (OJO NOSOTROS USAMOS SUBCARPETAS, en teoría dice que el .git debe estar en la raiz pero nosotro susamos subcarpetas, ver el word para ver cómo deployar usando subcarpetas)
+
+Para deployar otra rama LOCAL que no sea main a MAIN de HEROKU:
+git push heroku testbranch:main (recordar lo que hace este comando pushea A la rama master del repo heroku la rama local testbranch. Si no se especifica ":" pushea la rama coincidente. Si se pushea a otra que no sea main de Heroku no funcionará.
+
+Multiples ambientes:
+Nosotros podemos tener dev, test and prod: dev es nuestra máquina local, test es un app de Heroku con sus variables de entorno y PROD es OTRA APP de Heroku.
+Mediante git push podemos pushear nuestras ramas locales (diferentes a main) al repositorio de Heroku correspondiente).
+
+Para resetear el git de Heroku ejecutar:
+heroku plugins:install heroku-repo (instala este plugin por única vez)
+heroku repo:reset --app appname (borra elgit de Heroku)
+
+No se recomienda implementar repositorios grandes de más de 600 MB. Ejecutar heroku apps:info le muestra el tamaño de su repositorio.
+
+-----------------------------------------------------
+
+Procfiles
+Necesita un Procfile en la carpeta raiz (donde está el package.json) indicando el comando a ejecutar de la aplicación para iniciarla. 
+Generalmente web: npm start. Y correrá el script START del package.json. PERO podemos correr un script usando release: my_script (release phase) y luego nuestra web: npm start.
+Igualmente si no tenemos un Procfile Heroku identifica la app y la ejecuta.
+
+OJO!! MUY  IMPORTANTE: se puede hacer uso de las variables de entorno en este Procfile. 
+De esta forma podemos definir en una app EN SU ENTORNO la VARIABLE DE ENTORNO NODE_ENV = test, por lo que correrá el script de test con sus correspondientes variables de entorno, sería por ejemplo web: npm $NODE_ENV
+
+Podemos correr la app como sabemos llamando al script del package.json desde la consola, pero es CONVENIENTE usar 
+heroku local 
+para correrlo ya que será lo mismo que correrá el host.
+Como mencionamos éste correrá el Procfile y cargará sus variables de entorno definidas en el .env en el process.env. RECORDAR QUE PUEDE USAR LA VARIABLES DE ENTORNO DEFINIDAD en Heroku previamente.
+RECORDAR ESTE .ENV no debe subirse a control de versiones ya que tiene passwords a aplicaciones. PARA ESO SE USAN las variables de entorno definidas en Heroku para test y PROD.
+
+Para acceder a la consola del heroku tenemos varios comandos, ej:
+heroku config muestra las variables de entorno definidas
+heroku ps, muestra la cantidad de servidores (container/procesadores(DYNOS en Heroku)) que ejecutan la app. Por ejemplo web.x muestran su script que corrió (npm start)
+heroku ps::restart reinicia el servidor
+heroku logs, muestra el log de ejecución del servidor
+heroku ps bash abre la consola para poder ejecutar un comando en su consola
+
+-----------------------------------------
+Manejo de ambientes en Heroku:
+
+Como ya mencionamos:
+Nosotros podemos tener dev, test and prod: dev es nuestra máquina local, test es un app de Heroku con sus variables de entorno y PROD es OTRA APP de Heroku.
+Mediante git push podemos pushear nuestras ramas locales (diferentes a main) al repositorio de Heroku correspondiente).
+De esta forma se manejan los ambientes por separado.
+Obviamente debemos configurar cada ambiente con sus variables de entorno, addons, etc.
+RECORDAR que siempre se pushea a la rama master de ese ambiente, pudiendo seleccionar cualquiera LOCAL.
+
+Existen los que se llaman piplines en el cual se agregan apps que indican que estado es, si dev, stage o prod.
+Estas sirven para deployar directamente de una ambiente a otra. Ejemplo de test a prod (hay un botón que hace el deploy automático PROMOTE).
+
+ES PRIMORDIAL RECORDAR QUE:
+git push heroku main pushea los cambios ocales de main a la rama main de heroku.
+Debemos usar para los ambientes:
+git push heroku testbranch:main pushea la rama local testbrahc a la rama master de heroku
+La diferencia con los ambientes es que ahora ya tendremos otro nombre para el repo remoto, no es heroku sino será stageing o production. Para esto debemos crear la app segun indica la documentación y vincularla con ese nombre. POR DEFECTO PONE TODO HEROKU pero debemos cambiarla.
+git push staging master de esta forma pusheamos los cambios a staging repo.
+Conviene usar la rama LOCAL test para pasar los cambios a la rama master de STAGING (en lugar de siempre master a master).
+
+
+
+
+
+
+
+
+
+
+
