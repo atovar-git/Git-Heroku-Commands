@@ -91,4 +91,4 @@ Puede pasar que queremos ver la rama de otro compañero. La rama la vemos en Git
 - Ya pusheados nuestros cambios hacemos git pull para descargar todos los cambios que tiene Github. Vemos que aparece un mensaje mostrando una nueva rama que es la de nuestro compañero de origin (Github).
 - Hacemos `git checkout "rama_de_mi_compañero"` y listo. Ya Git sabe que estamos trackeando esa rama y podemos ver su contenido.
 
-## 8. Editamos la misma parte del código sin haber pulleado + sin stage
+## 8. Edición en LOCAL y REMOTO (misma parte)
