@@ -91,4 +91,10 @@ Puede pasar que queremos ver la rama de otro compañero. La rama la vemos en Git
 - Ya pusheados nuestros cambios hacemos git pull para descargar todos los cambios que tiene Github. Vemos que aparece un mensaje mostrando una nueva rama que es la de nuestro compañero de origin (Github).
 - Hacemos `git checkout "rama_de_mi_compañero"` y listo. Ya Git sabe que estamos trackeando esa rama y podemos ver su contenido.
 
-## 8. Edición en LOCAL y REMOTO (misma parte)
+## 8. Edición en LOCAL y REMOTO (conflictos)
+Idealmente siempre debemos hacer un `git pull` antes de empezar o continuar trabajando para tener los últimos cambios del repositorio. Pero puede pasar que no lo hayamos hecho y emos modificado la MISMA PARTE DEL CODIGO. Lo que sucede:
+
+- Misma parte de código:
+  1. Cambios en local + sin stage/staged/sin commit | Cambios en remoto | git pull => error. Pide commitear cambios en local.
+
+  2. Cambios commiteados en local | Cambios commiteados en remoto | git pull => conflicto. Resolverlos (se decide si aceptar los cambios entrantes, ambos o solo los locales, guardar las modificaciones, git add + git commit + git push)
